@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+httpx
+python-dotenv
+openai
+pinecone>=3.0.0
+tqdm
