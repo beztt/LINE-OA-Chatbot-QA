@@ -1,9 +1,10 @@
-import os
-import json
-import openai
 from dotenv import load_dotenv
 from pinecone import Pinecone, ServerlessSpec
 from tqdm import tqdm
+
+import os
+import json
+import openai
 
 load_dotenv()
 

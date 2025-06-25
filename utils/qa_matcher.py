@@ -1,16 +1,20 @@
-import logging
+from difflib import get_close_matches
 from utils.pinecone_utils import search_answer_from_pinecone_with_metadata
 from utils.prompt_builder import build_rephrase_prompt
+
+import logging
 import openai
 import json
-from difflib import get_close_matches
 import os
 
+# Load .env key
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
+# Load Q&A
 with open("qa_data.json", "r", encoding="utf-8") as f:
     qa_data = json.load(f)
 
+# Fallback: Local match (fuzzy)
 def fallback_answer(user_question: str):
     questions = [q["question"] for q in qa_data]
     matches = get_close_matches(user_question, questions, n=1, cutoff=0.5)
@@ -22,6 +26,26 @@ def fallback_answer(user_question: str):
                 return qa["answer"]
     return None
 
+def gpt_rephrase_answer(user_question: str, matched_qa: dict) -> str:
+    try:
+        # prompt = build_rephrase_prompt(user_question, matched_qa)
+        logging.info("[GPT] Trying to rephrase answer from closest QA match.")
+        response = openai.ChatCompletion.create(
+            # model="gpt-4",
+            model="gpt-3.5-turbo",
+            # messages=[{"role": "user", "content": prompt}],
+            messages=build_rephrase_prompt(user_question, matched_qa),
+            temperature=0.5
+        )
+        logging.info("[GPT] Answered using ChatCompletion.")
+        return response["choices"][0]["message"]["content"].strip()
+
+    except Exception as e:
+        logging.error(f"[GPT] ❌ GPT fallback failed: {e}")
+        return "ขออภัย ขณะนี้ระบบไม่สามารถตอบคำถามได้ครับ 😅"
+
+
+# Main logic: Find best answer
 def find_best_answer(user_question: str) -> str:
     try:
         match = search_answer_from_pinecone_with_metadata(user_question, top_k=1)
@@ -32,22 +56,11 @@ def find_best_answer(user_question: str) -> str:
             if score >= 0.85:
                 logging.info("[PINECONE] Match found.")
                 return metadata["answer"]
+            elif score >= 0.5:
+                return gpt_rephrase_answer(user_question, metadata)
             else:
-                # ใช้ GPT เพื่อ rephrase answer
-                prompt = build_rephrase_prompt(user_question, metadata)
-                logging.info("[GPT] Trying to rephrase answer from closest QA match.")
-                response = openai.ChatCompletion.create(
-                    # model="gpt-4",
-                    model="gpt-3.5-turbo",
-                    # messages=[{"role": "user", "content": prompt}],
-                    messages=build_rephrase_prompt(user_question, metadata),
-                    temperature=0.5,
-                )
-                reply = response["choices"][0]["message"]["content"].strip()
-                logging.info("[GPT] Answered using ChatCompletion.")
-                return reply
+                return fallback_answer(user_question)
 
-        # fallback → local fuzzy match
         fallback = fallback_answer(user_question)
         if fallback:
             return fallback

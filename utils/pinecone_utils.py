@@ -1,7 +1,7 @@
-# utils/pinecone_utils.py
-import os
 from dotenv import load_dotenv
 from pinecone import Pinecone
+
+import os
 import openai
 import logging
 
