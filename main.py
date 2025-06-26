@@ -70,9 +70,6 @@ async def line_webhook(request: Request, x_line_signature: str = Header(None)):
 
 
 async def reply_to_line(reply_token, message):
-    if not message or not message.strip():
-        message = "ระบบไม่สามารถตอบคำถามนี้ได้ครับ 😅"
-    
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {LINE_CHANNEL_ACCESS_TOKEN}"

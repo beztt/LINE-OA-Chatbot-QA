@@ -24,7 +24,7 @@ def fallback_answer(user_question: str):
             if qa["question"] == matched_q:
                 logging.info("[LOCAL] Fallback match found.")
                 return qa["answer"]
-    return None
+    return "หากคุณต้องการสอบถามเกี่ยวกับระบบ กรุณาพิมพ์คำถามเกี่ยวกับ DTMS ได้เลยครับ"
 
 def gpt_rephrase_answer(user_question: str, matched_qa: dict) -> str:
     try:
@@ -52,7 +52,7 @@ def find_best_answer(user_question: str) -> str:
         if match:
             score = match["score"]
             metadata = match["metadata"]
-            logging.info(f"[PINECONE] Score={score:.3f} ID={match['id']}")
+            logging.info(f"[PINECONE] Score={score:.3f} ID={match['id']} Question={metadata['question']}")
             if score >= 0.85:
                 logging.info("[PINECONE] Match found.")
                 return metadata["answer"]

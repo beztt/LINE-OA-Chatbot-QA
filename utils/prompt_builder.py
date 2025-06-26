@@ -23,6 +23,7 @@ def build_rephrase_prompt(user_question: str, matched_qa: dict) -> list:
             "role": "user",
             "content": (
                 f"คำถามจากผู้ใช้: {user_question}\n\n"
+                f"คำถามเดิมจากฐานข้อมูล: {matched_qa['question']}\n\n"
                 f"คำตอบเดิมจากฐานข้อมูล: {matched_qa['answer']}\n\n"
                 f"โปรดตอบใหม่ให้เหมาะกับคำถามนี้ โดยใช้ข้อมูลจากคำตอบเดิม"
             )
