@@ -61,7 +61,7 @@ async def line_webhook(request: Request, x_line_signature: str = Header(None)):
         # else:
         #     reply_text = "หากต้องการถามบอท กรุณาพิมพ์ขึ้นต้นด้วย 'bot ...'"
 
-        question = user_text[3:].lstrip(": \n").strip()
+        question = user_text.strip()
         reply_text = find_best_answer(question)
 
         await reply_to_line(reply_token, reply_text)

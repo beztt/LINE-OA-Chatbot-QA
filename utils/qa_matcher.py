@@ -1,6 +1,7 @@
 from difflib import get_close_matches
 from utils.pinecone_utils import search_answer_from_pinecone_with_metadata
 from utils.prompt_builder import build_rephrase_prompt
+from utils.intent_detector import is_non_question
 
 import logging
 import openai
@@ -47,6 +48,16 @@ def gpt_rephrase_answer(user_question: str, matched_qa: dict) -> str:
 
 # Main logic: Find best answer
 def find_best_answer(user_question: str) -> str:
+    intent = is_non_question(user_question)
+    
+    if intent == "greeting":
+        return "สวัสดีครับ หากคุณต้องการสอบถามเกี่ยวกับระบบ กรุณาพิมพ์คำถามเกี่ยวกับ DTMS ได้เลยครับ"
+    elif intent == "thanks":
+        return "ยินดีครับ หากมีคำถามเพิ่มเติม ยินดีช่วยเหลือเสมอครับ"
+    elif intent == "test":
+        return "ระบบพร้อมใช้งานครับ ✅ หากคุณมีคำถาม พิมพ์ได้เลยครับ"
+    
+    # ขั้นตอน QA Matching
     try:
         match = search_answer_from_pinecone_with_metadata(user_question, top_k=1)
         if match:
