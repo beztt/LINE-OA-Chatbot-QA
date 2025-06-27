@@ -1,11 +1,11 @@
-# 🤖 LINE OA Q&A Chatbot (with Pinecone + GPT Hybrid)
+# LINE OA Q&A Chatbot (with Pinecone + GPT Hybrid)
 
 ระบบ LINE Bot สำหรับตอบคำถาม
 โดยใช้ Pinecone Vector Search + GPT Rephrasing + Fallback Matching เพื่อให้ดูเหมือนพูดคุยกับคนจริง
 
 ---
 
-## ✅ Features
+## Features
 
 - ใช้ Pinecone vector DB match Q&A ที่ใกล้เคียง
 - ใช้ GPT (gpt-3.5-turbo หรือ gpt-4-turbo) ช่วยแต่งคำตอบให้นุ่มนวล
@@ -15,12 +15,12 @@
 
 ---
 
-## 🧠 Architecture
+## Architecture
 
 ```
 flowchart TD
   A[User ส่งข้อความ LINE] --> B[/FastAPI /webhook/]
-  B --> C{}
+  B --> C[รับค่าแชท]
   C -- No --> C1[ตอบ Greeting หรือระบบพร้อม]
   C -- Yes --> D[Intent: เป็นคำถาม?]
   D -- No --> D1[ตอบ: ไม่ใช่คำถาม]
@@ -37,7 +37,7 @@ flowchart TD
 
 ---
 
-## 📦 Project Structure
+## Project Structure
 
 ```
 .
@@ -56,7 +56,7 @@ flowchart TD
 
 ---
 
-## 🛠️ Setup & Run
+## Setup & Run
 
 1. ติดตั้ง dependencies:
 
@@ -97,7 +97,7 @@ ngrok http 8000
 
 ---
 
-## 🧠 Notes
+## Notes
 
 - สามารถเพิ่ม Q&A ได้โดยแก้ไข `qa_data.json` แล้วรัน `embed_qa_to_pinecone.py` ใหม่
 
