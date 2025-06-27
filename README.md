@@ -17,7 +17,7 @@
 
 ## 🧠 Architecture
 
-```mermaid
+```
 flowchart TD
   A[User ส่งข้อความ LINE] --> B[/FastAPI /webhook/]
   B --> C{ขึ้นต้นด้วย "bot "?}
