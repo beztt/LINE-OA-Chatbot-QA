@@ -18,7 +18,7 @@ with open("qa_data.json", "r", encoding="utf-8") as f:
 # Fallback: Local match (fuzzy)
 def fallback_answer(user_question: str):
     questions = [q["question"] for q in qa_data]
-    matches = get_close_matches(user_question, questions, n=1, cutoff=0.5)
+    matches = get_close_matches(user_question, questions, n=1, cutoff=0.4)
     if matches:
         matched_q = matches[0]
         for qa in qa_data:
@@ -67,7 +67,7 @@ def find_best_answer(user_question: str) -> str:
             if score >= 0.85:
                 logging.info("[PINECONE] Match found.")
                 return metadata["answer"]
-            elif score >= 0.5:
+            elif score >= 0.35:
                 return gpt_rephrase_answer(user_question, metadata)
             else:
                 return fallback_answer(user_question)
