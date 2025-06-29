@@ -14,7 +14,7 @@ pc = Pinecone(api_key=pinecone_api_key)
 index = pc.Index(pinecone_index_name)
 
 def get_embedding(text):
-    response = client.Embedding.create(
+    response = client.embedding.create(
         input=text,
         model="text-embedding-3-small"
     )
