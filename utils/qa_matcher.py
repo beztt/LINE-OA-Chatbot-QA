@@ -39,7 +39,7 @@ def gpt_rephrase_answer(user_question: str, matched_qa: dict) -> str:
             temperature=0.5
         )
         logging.info("[GPT] Answered using ChatCompletion.")
-        return response["choices"][0]["message"]["content"].strip()
+        return response.choices[0].message.content.strip()
 
     except Exception as e:
         logging.error(f"[GPT] ❌ GPT fallback failed: {e}")

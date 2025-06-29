@@ -18,7 +18,7 @@ def get_embedding(text):
         input=text,
         model="text-embedding-3-small"
     )
-    return response["data"][0]["embedding"]
+    return response.data[0].embedding
 
 def search_answer_from_pinecone_with_metadata(question, top_k=1):
     vector = get_embedding(question)
