@@ -1,8 +1,3 @@
-from fastapi import FastAPI, Request, Header, HTTPException
-from fastapi.responses import JSONResponse
-from utils.qa_matcher import find_best_answer
-from dotenv import load_dotenv
-
 import hashlib
 import hmac
 import os
@@ -11,6 +6,11 @@ import httpx
 import base64
 import logging
 import traceback
+
+from fastapi import FastAPI, Request, Header, HTTPException
+from fastapi.responses import JSONResponse
+from utils.qa_matcher import find_best_answer
+from dotenv import load_dotenv
 
 # ตั้งค่า log
 logging.basicConfig(level=logging.INFO)

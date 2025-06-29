@@ -1,15 +1,16 @@
-from difflib import get_close_matches
-from utils.pinecone_utils import search_answer_from_pinecone_with_metadata
-from utils.prompt_builder import build_rephrase_prompt
-from utils.intent_detector import is_non_question
-
 import logging
 import openai
 import json
 import os
 
+from openai import OpenAI
+from difflib import get_close_matches
+from utils.pinecone_utils import search_answer_from_pinecone_with_metadata
+from utils.prompt_builder import build_rephrase_prompt
+from utils.intent_detector import is_non_question
+
 # Load .env key
-openai.api_key = os.getenv("OPENAI_API_KEY")
+openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # Load Q&A
 with open("qa_data.json", "r", encoding="utf-8") as f:
@@ -29,13 +30,11 @@ def fallback_answer(user_question: str):
 
 def gpt_rephrase_answer(user_question: str, matched_qa: dict) -> str:
     try:
-        # prompt = build_rephrase_prompt(user_question, matched_qa)
         logging.info("[GPT] Trying to rephrase answer from closest QA match.")
-        response = openai.ChatCompletion.create(
+        response = openai_client.chat.completions.create(
             # model="gpt-4",
             model="gpt-3.5-turbo",
-            # messages=[{"role": "user", "content": prompt}],
-            messages=build_rephrase_prompt(user_question, matched_qa),
+            messages=[{"role":"user","content": build_rephrase_prompt(user_question, matched_qa) }],
             temperature=0.5
         )
         logging.info("[GPT] Answered using ChatCompletion.")
