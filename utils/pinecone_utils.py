@@ -1,6 +1,7 @@
 import os
 import logging
 import openai
+import numpy as np
 
 from dotenv import load_dotenv
 from pinecone import Pinecone, ServerlessSpec
@@ -30,7 +31,8 @@ def get_embedding(text: str) -> list[float]:
         input=text,
         model="text-embedding-3-small"
     )
-    return response.data[0].embedding
+    embedding = np.array(response.data[0].embedding, dtype=np.float32).tolist()
+    return embedding
 
 def search_answer_from_pinecone_with_metadata(question: str, top_k: int = 1):
     vector = get_embedding(question)
