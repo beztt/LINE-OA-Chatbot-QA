@@ -26,14 +26,12 @@ if pinecone_index_name not in pc.list_indexes().names():
     )
 index = pc.Index(pinecone_index_name)
 
-def get_embedding(text: str) -> list[float]:
+def get_embedding(text):
     response = openai_client.embeddings.create(
         input=text,
         model="text-embedding-3-small"
     )
-    embedding = np.array(response.data[0].embedding, dtype=np.float32)
-    embedding = np.nan_to_num(embedding, nan=0.0, posinf=0.0, neginf=0.0)
-    return embedding.tolist()
+    return response.data[0].embedding
 
 def search_answer_from_pinecone_with_metadata(question: str, top_k: int = 1):
     vector = get_embedding(question)
