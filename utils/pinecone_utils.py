@@ -9,12 +9,11 @@ from openai import OpenAI
 
 load_dotenv()
 
-openai_api_key = os.getenv("OPENAI_API_KEY")
+openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 pinecone_api_key = os.getenv("PINECONE_API_KEY")
 pinecone_index_name = os.getenv("PINECONE_INDEX_NAME")
 pinecone_region = os.getenv("PINECONE_REGION")
 
-openai_client = OpenAI(api_key=openai_api_key)
 pc = Pinecone(api_key=pinecone_api_key)
 
 if pinecone_index_name not in pc.list_indexes().names():
@@ -26,12 +25,13 @@ if pinecone_index_name not in pc.list_indexes().names():
     )
 index = pc.Index(pinecone_index_name)
 
-def get_embedding(text):
+def get_embedding(text: str) -> list[float]:
     response = openai_client.embeddings.create(
-        input=text,
+        input=[text],
         model="text-embedding-3-small"
     )
-    return response.data[0].embedding
+    embedding = response.data[0].embedding
+    return np.array(embedding, dtype=np.float32).tolist()
 
 def search_answer_from_pinecone_with_metadata(question: str, top_k: int = 1):
     vector = get_embedding(question)
