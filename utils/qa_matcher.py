@@ -30,11 +30,13 @@ def fallback_answer(user_question: str):
 
 def gpt_rephrase_answer(user_question: str, matched_qa: dict) -> str:
     try:
+        prompt = build_rephrase_prompt(user_question, matched_qa)
         logging.info("[GPT] Trying to rephrase answer from closest QA match.")
         response = openai_client.chat.completions.create(
             # model="gpt-4",
             model="gpt-3.5-turbo",
-            messages=[{"role":"user","content": build_rephrase_prompt(user_question, matched_qa) }],
+            # messages=[{"role": "user", "content": prompt}],
+            messages=prompt,
             temperature=0.5
         )
         logging.info("[GPT] Answered using ChatCompletion.")
