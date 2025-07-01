@@ -68,15 +68,18 @@ def find_best_answer(user_question: str) -> str:
             if score >= 0.85:
                 logging.info("[PINECONE] Match found.")
                 return metadata["answer"]
-            elif score >= 0.35:
+            elif score >= 0.5:
                 return gpt_rephrase_answer(user_question, metadata)
-            else:
+            elif score >= 0.35:
+                logging.warning("[PINECONE] Low confidence, not using GPT. Falling back to local.")
                 return fallback_answer(user_question)
+            else:
+                return "ขออภัย ไม่พบคำตอบที่ตรงกับคำถามของคุณครับ"
 
         fallback = fallback_answer(user_question)
         if fallback:
             return fallback
-        return "ขออภัย ไม่พบคำตอบที่ตรงกับคำถามของคุณครับ 😅"
+        return "ขออภัย ไม่พบคำตอบที่ตรงกับคำถามของคุณครับ"
 
     except Exception as e:
         logging.error(f"[FALLBACK] Error occurred: {e}")
