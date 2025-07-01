@@ -30,7 +30,7 @@ def fallback_answer(user_question: str):
 
 def gpt_rephrase_answer(user_question: str, matched_qa: dict, chat_history: list[str]):
     try:
-        logging.debug(f"[GPT] Chat history = {chat_history}")
+        logging.info(f"[GPT] Chat history = {chat_history}")
         prompt = build_rephrase_prompt(user_question, matched_qa, chat_history)
         logging.info("[GPT] Trying to rephrase answer from closest QA match.")
         response = openai_client.chat.completions.create(
