@@ -28,9 +28,10 @@ def fallback_answer(user_question: str):
                 return qa["answer"]
     return "หากคุณต้องการสอบถามเกี่ยวกับระบบ กรุณาพิมพ์คำถามเกี่ยวกับ DTMS ได้เลยครับ"
 
-def gpt_rephrase_answer(user_question: str, matched_qa: dict) -> str:
+def gpt_rephrase_answer(user_question: str, matched_qa: dict, chat_history: list[str]):
     try:
-        prompt = build_rephrase_prompt(user_question, matched_qa)
+        logging.info(f"[GPT] Chat history = {chat_history}")
+        prompt = build_rephrase_prompt(user_question, matched_qa, chat_history)
         logging.info("[GPT] Trying to rephrase answer from closest QA match.")
         response = openai_client.chat.completions.create(
             # model="gpt-4",
@@ -44,11 +45,11 @@ def gpt_rephrase_answer(user_question: str, matched_qa: dict) -> str:
 
     except Exception as e:
         logging.error(f"[GPT] ❌ GPT fallback failed: {e}")
-        return "ขออภัย ขณะนี้ระบบไม่สามารถตอบคำถามได้ครับ 😅"
+        return "ขออภัย ขณะนี้ระบบไม่สามารถตอบคำถามได้ครับ กรุณาลองใหม่ในภายหลังครับ"
 
 
 # Main logic: Find best answer
-def find_best_answer(user_question: str) -> str:
+def find_best_answer(user_question: str, chat_history: list[str]) -> str:
     intent = is_non_question(user_question)
     
     if intent == "greeting":
@@ -68,19 +69,23 @@ def find_best_answer(user_question: str) -> str:
             if score >= 0.85:
                 logging.info("[PINECONE] Match found.")
                 return metadata["answer"]
-            elif score >= 0.35:
-                return gpt_rephrase_answer(user_question, metadata)
-            else:
+            elif score >= 0.36:
+                return gpt_rephrase_answer(user_question, metadata, chat_history)
+            elif score >= 0.25:
+                logging.warning("[PINECONE] Low confidence, not using GPT. Falling back to local.")
                 return fallback_answer(user_question)
+            else:
+                return "หากคุณต้องการสอบถามเกี่ยวกับระบบ กรุณาพิมพ์คำถามเกี่ยวกับ DTMS ได้เลยครับ"
+            # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
         fallback = fallback_answer(user_question)
         if fallback:
             return fallback
-        return "ขออภัย ไม่พบคำตอบที่ตรงกับคำถามของคุณครับ 😅"
+        return "หากคุณต้องการสอบถามเกี่ยวกับระบบ กรุณาพิมพ์คำถามเกี่ยวกับ DTMS ได้เลยครับ"
 
     except Exception as e:
         logging.error(f"[FALLBACK] Error occurred: {e}")
         fallback = fallback_answer(user_question)
         if fallback:
             return fallback
-        return "ขออภัย ระบบมีปัญหาชั่วคราว 😢"
+        return "ขออภัย ระบบมีปัญหาชั่วคราว กรุณาลองใหม่อีกครั้งในภายหลังครับ"

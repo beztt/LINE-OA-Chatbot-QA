@@ -11,13 +11,15 @@ from fastapi import FastAPI, Request, Header, HTTPException
 from fastapi.responses import JSONResponse
 from utils.qa_matcher import find_best_answer
 from dotenv import load_dotenv
+from collections import defaultdict, deque
 
 # ตั้งค่า log
 logging.basicConfig(level=logging.INFO)
-
 # โหลด ENV
 load_dotenv()
-
+# user_id -> deque(maxlen=3)
+user_histories = defaultdict(lambda: deque(maxlen=3))
+# FastAPI app
 app = FastAPI()
 
 LINE_CHANNEL_SECRET = os.getenv("LINE_CHANNEL_SECRET")
@@ -61,8 +63,15 @@ async def line_webhook(request: Request, x_line_signature: str = Header(None)):
         # else:
         #     reply_text = "หากต้องการถามบอท กรุณาพิมพ์ขึ้นต้นด้วย 'bot ...'"
 
+        user_id = event["source"]["userId"]
         question = user_text.strip()
-        reply_text = find_best_answer(question)
+
+        # เก็บข้อความลง history
+        user_histories[user_id].append(question)
+        chat_history = list(user_histories[user_id])
+
+        # ส่งเข้าไปให้ find_best_answer
+        reply_text = find_best_answer(question, chat_history)
 
         await reply_to_line(reply_token, reply_text)
 
