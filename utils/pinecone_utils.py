@@ -4,7 +4,6 @@ import openai
 import numpy as np
 
 from dotenv import load_dotenv
-# from pinecone import Pinecone, ServerlessSpec
 from fastapi import HTTPException, Header
 from pinecone import Pinecone , ServerlessSpec
 from openai import OpenAI

@@ -6,3 +6,5 @@ openai
 pinecone>=3.0.0
 tqdm
 numpy
+openai
+dotenv
