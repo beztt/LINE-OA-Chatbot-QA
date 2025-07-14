@@ -89,6 +89,8 @@ LINE_CHANNEL_ACCESS_TOKEN=...
 python embed_qa_to_pinecone.py
 ```
 
+---
+
 ## Run local:
 
 1. run Server:
