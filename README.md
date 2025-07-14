@@ -19,14 +19,11 @@
 ## ระบบ Hybrid Matching & Memory
 
 ระบบจะประมวลผลคำถามโดยพิจารณาตามลำดับ:
-
 1. Greeting/Thanks/Testing → ตอบกลับแบบ preset
 2. ส่งคำถามเข้า Pinecone → vector match
-
-- ถ้า score ≥ 0.85 → ตอบคำตอบจาก Q&A ตรง ๆ
-- ถ้า score 0.50 - 0.84 → ส่งให้ GPT rephrase + ปรับภาษาตามคำถามและ context
-- ถ้า score ต่ำกว่า 0.5 → ใช้ local fuzzy match หรือแสดง fallback message
-
+   - ถ้า score ≥ 0.85 → ตอบคำตอบจาก Q&A ตรง ๆ
+   - ถ้า score 0.50 - 0.84 → ส่งให้ GPT rephrase + ปรับภาษาตามคำถามและ context
+   - ถ้า score ต่ำกว่า 0.5 → ใช้ local fuzzy match หรือแสดง fallback message
 3. ใช้ memory context ล่าสุด 3 ข้อความ (ต่อ user_id) เพื่อช่วยให้ GPT เข้าใจบทสนทนา
 
 ---
@@ -91,7 +88,7 @@ python embed_qa_to_pinecone.py
 
 ---
 
-## Run local:
+## Run local
 
 1. run Server:
 
